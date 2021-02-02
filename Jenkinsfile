@@ -5,6 +5,9 @@ pipeline {
         DOCKER_HUB_REPO = "pouellette123/capstone"
         CONTAINER_NAME = "capstone"
     }
+    options {
+        skipStagesAfterUnstable()
+    }
     stages {
         stage('Clean Up') {
             steps {
@@ -19,32 +22,32 @@ pipeline {
         stage('Build the Docker Image') {
             steps {
                 sh 'docker image build -t $DOCKER_HUB_REPO:latest $APP_HOME/'
-              //  sh 'docker image tag $DOCKER_HUB_REPO:latest $DOCKER_HUB_REPO:$BUILD_NUMBER//'
+                sh 'docker image tag $DOCKER_HUB_REPO:latest $DOCKER_HUB_REPO:$BUILD_NUMBER'
             }
         }
         stage('Run the Container') {
             steps {
-                script {
+                //script {
                     sh 'if (docker ps | grep $CONTAINER_NAME); then docker stop $CONTAINER_NAME;fi'
                     sh 'if (docker image ls | grep $CONTAINER_NAME); then docker rm $CONTAINER_NAME;fi'
-                    sh 'docker run --name $CONTAINER_NAME -d -p 8079:8079 $DOCKER_HUB_REPO'
-                    //sh 'docker ps | grep $CONTAINER_NAME'
-                    //sh 'STATUS = $?'
-                    //if ( STATUS == "1" ) {
-                    //    sh 'echo if'
-                    //    sh 'docker run --name $CONTAINER_NAME -d -p 8079:8079 $DOCKER_HUB_REPO'
-                    //} else {
-                    //    sh 'echo else'
-                    //}
-                    //sh 'STAT = $?'
-                    //sh 'echo $STAT'
-                    //if ($BUILD_NUMBER == 1) {
-                    //    sh 'echo running'
-                    //}
-                    //else {
-                     //   sh 'echo not running'
-                    //}
+                    sh 'docker run --name $CONTAINER_NAME -d -p 8079:8079 $DOCKER_HUB_REPO:$BUILD_NUMBER'
+                //}
+            }
+        }
+        stage('Test the Container') {
+            steps {
+                sh 'curl -s --head  --request GET  10.0.0.143:8079 | grep 200'
+            }
+        }
+        stage('Push the Image to DockerHub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'USER1', passwordVariable: 'PASS1')]) {
+                    sh 'docker login -u "$USER1" -p "$PASS1"'
                 }
+                //  Pushing Image to Repository
+                sh 'docker push $DOCKER_HUB_REPO:$BUILD_NUMBER'
+                sh 'docker push $DOCKER_HUB_REPO:latest'
+                echo "Image built and pushed to repository"
             }
         }
     }
