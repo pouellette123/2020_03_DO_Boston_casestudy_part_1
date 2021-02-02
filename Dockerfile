@@ -11,7 +11,7 @@ COPY . /usr/src/app/
 RUN pip install --no-cache-dir -r /usr/src/app/requirements.txt
 
 # tell the port number the container should expose
-EXPOSE 8079
+# EXPOSE 8079
 
 # run the command
 CMD ["python", "/usr/src/app/web.py"]
