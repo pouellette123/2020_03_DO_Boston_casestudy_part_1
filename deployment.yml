@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: capstone-deployment
+  labels:
+    app: capstoneapp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: capstoneapp
+  template:
+    metadata:
+      labels:
+        app: capstoneapp
+    spec:
+      containers:
+      - name: capstone-container
+        image: "{{ image_id }}"
+        ports:
+        - containerPort: 8079

@@ -50,5 +50,12 @@ pipeline {
                 echo "Image built and pushed to repository"
             }
         }
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    sh 'ansible-playbook  playbook.yml --extra-vars \"image_id=$DOCKER_HUB_REPO:$BUILD_NUMBER\"'
+                }        
+            }
+        }
     }
 }

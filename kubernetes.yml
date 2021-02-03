@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: capstone-deployment
+  labels:
+    app: capstoneapp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: capstoneapp
+  template:
+    metadata:
+      labels:
+        app: capstoneapp
+    spec:
+      containers:
+      - name: capstone-container
+        image: pouellette123/capstone
+        ports:
+        - containerPort: 8079
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: capstone-service
+spec:
+  type: NodePort
+  selector:
+    app: capstoneapp
+  ports:
+  - protocol: TCP
+    port: 8079
+    targetPort: 8079
+    nodePort: 32001
