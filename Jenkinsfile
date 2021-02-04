@@ -27,11 +27,9 @@ pipeline {
         }
         stage('Run the Container') {
             steps {
-                //script {
-                    sh 'if (docker ps | grep $CONTAINER_NAME); then docker stop $CONTAINER_NAME;fi'
-                    sh 'if (docker image ls | grep $CONTAINER_NAME); then docker rm $CONTAINER_NAME;fi'
-                    sh 'docker run --name $CONTAINER_NAME -d -p 8079:8079 $DOCKER_HUB_REPO:$BUILD_NUMBER'
-                //}
+                sh 'if (docker ps | grep $CONTAINER_NAME); then docker stop $CONTAINER_NAME;fi'
+                sh 'if (docker image ls | grep $CONTAINER_NAME); then docker rm $CONTAINER_NAME;fi'
+                sh 'docker run --name $CONTAINER_NAME -d -p 8079:8079 $DOCKER_HUB_REPO:$BUILD_NUMBER'
             }
         }
         stage('Test the Container') {
@@ -47,13 +45,13 @@ pipeline {
                 //  Pushing Image to Repository
                 sh 'docker push $DOCKER_HUB_REPO:$BUILD_NUMBER'
                 sh 'docker push $DOCKER_HUB_REPO:latest'
-                echo "Image built and pushed to repository"
+//                echo "Image built and pushed to repository"
             }
         }
         stage('Deploy to Kubernetes') {
             steps {
-                script {
-                    sh 'ansible-playbook  playbook.yml --extra-vars \"image_id=$DOCKER_HUB_REPO:$BUILD_NUMBER\"'
+                withCredentials([sshUserPrivateKey(credentialsId: 'key3', keyFileVariable: 'KEY', usernameVariable: 'USERSSH')]) {
+                        sh 'ssh -i ${KEY} ${USERSSH}@10.0.0.143 -C \"kubectl set image deployment/capstone-deployment capstone-container=${DOCKER_HUB_REPO}:${BUILD_NUMBER}\"'
                 }        
             }
         }
