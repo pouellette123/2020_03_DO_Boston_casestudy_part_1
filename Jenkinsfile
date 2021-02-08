@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    triggers {
+        pollSCM '* * * * *'
+    }
     environment {
         APP_HOME = "$JENKINS_HOME/workspace/2020_03_DO_Boston_casestudy_part_1/2020_03_DO_Boston_casestudy_part_1/"
         DOCKER_HUB_REPO = "pouellette123/capstone"
