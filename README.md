@@ -1,6 +1,6 @@
-Please follow the live for an explanation of the case study. [document](https://docs.google.com/document/d/17OwlITE-yPWNj3Vi5RtQfz3ItvSkOfnbaVMnzlZyGTg)
+Please follow the link for an explanation of the case study. [document](https://docs.google.com/document/d/17OwlITE-yPWNj3Vi5RtQfz3ItvSkOfnbaVMnzlZyGTg)
 
-This Project uses a cask flask application to implement a CI/CD pipeline.
+This Project uses a flask application to implement a CI/CD pipeline.
 
 The infrastructure added.
 
